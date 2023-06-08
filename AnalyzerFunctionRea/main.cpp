@@ -3,71 +3,6 @@
 #include <math.h> 
 using namespace std;
 
-class Fraction
-{
-private:
-    int numerator, denominator;
-public:
-    Fraction()
-    {
-        numerator = 1;
-        denominator = 1;
-    }
-    Fraction(int n, int d) //Инициализация объекта класса Fraction с двумя параметрами numerator - числитель, denominator - знаменатель
-    {
-        numerator = n;
-        if (d == 0)
-        {
-            cout << "ошибка: деление на ноль" << endl;
-            exit(0);
-        }
-        else
-            denominator = d;
-    }
-    Fraction Sum(Fraction otherFraction) //Функция класса Fraction, для сложения одного объекта этого класса с другим
-    {
-        int n = numerator * otherFraction.denominator + otherFraction.numerator * denominator;
-        int d = denominator * otherFraction.denominator;
-        return Fraction(n / gcd(n, d), d / gcd(n, d));
-    }
-    Fraction Difference(Fraction otherFraction) //Функция класса Fraction, для вычитания одного объекта этого класса из другого
-    {
-        int n = numerator * otherFraction.denominator - otherFraction.numerator * denominator;
-        int d = denominator * otherFraction.denominator;
-        return Fraction(n / gcd(n, d), d / gcd(n, d));
-    }
-    Fraction Product(Fraction otherFraction) //Функция класса Fraction, для умножения двух объектов этого класса
-    {
-        int n = numerator * otherFraction.numerator;
-        int d = denominator * otherFraction.denominator;
-        return Fraction(n / gcd(n, d), d / gcd(n, d));
-    }
-    Fraction Division(Fraction otherFraction) //Функция класса Fraction, для деления двух объектов этого класса
-    {
-        int n = numerator * otherFraction.denominator;
-        int d = denominator * otherFraction.numerator;
-        return Fraction(n / gcd(n, d), d / gcd(n, d));
-    }
-    int gcd(int n, int d)
-    {
-        int remainder;
-        while (d != 0)
-        {
-            remainder = n % d;
-            n = d;
-            d = remainder;
-        }
-        return n;
-    }
-    void show() //функция для вывода объекта, класса Fraction
-    {
-        if (denominator == 1)
-            cout << numerator << endl;
-        else
-            cout << numerator << "/" << denominator << endl;
-    }
-};
-
 bool is_prime(int number) { //проверка на простое число 
     for (int i = 2; i <= (sqrt(abs(number))); i++) {
         if (number % i == 0) {
@@ -90,15 +25,15 @@ bool is_perfect(int num) { //проверка на совершенное чис
 }
 
 int NOD(int num_1, int num_2) { //нахождение наибольшего общего делителя 
-    while (num_1 != num_2)
-    {
-        if (num_1 > num_2)
-            num_1 -= num_2;
-        else
-            num_2 -= num_1;
+        int remainder;
+        while (d != 0)
+        {
+            remainder = n % d;
+            n = d;
+            d = remainder;
+        }
+        return n;
     }
-    return num_1;
-}
 
 int NOK(int num_1, int num_2) { //нахождение наименьшего общего кратного 
     int temp_1, temp_2, result;
@@ -116,6 +51,62 @@ int NOK(int num_1, int num_2) { //нахождение наименьшего о
 
     result = (num_1 * num_2) / temp_1;
     return result;
+}
+
+void sum(int num_1, int dom_1, int num_2, int dom_2) //Функция, для сложения одной дроби с другой
+{
+    int n = num_1 * dom_2 + num_2 * dom_1;
+    int d = dom_2 * dom_1;
+    show(num_1, dom_1);
+    cout << " + ";
+    show(num_2, dom_2);
+    cout << " = ";
+    show(n / NOD(n, d), d / NOD(n, d));
+    cout << endl;
+}
+
+void difference(int num_1, int dom_1, int num_2, int dom_2) //Функция, для вычитания одной дроби из другой
+{
+    int n = num_1 * dom_2 - num_2 * dom_1;
+    int d = dom_1 * dom_2;
+    show(num_1, dom_1);
+    cout << " - ";
+    show(num_2, dom_2);
+    cout << " = ";
+    show(n / NOD(n, d), d / NOD(n, d));
+    cout << endl;
+}
+
+void product(int num_1, int dom_1, int num_2, int dom_2) //Функция, для умножения одной дроби с другой
+{
+    int n = num_1 * num_2;
+    int d = dom_2 * dom_1;
+    show(num_1, dom_1);
+    cout << " * ";
+    show(num_2, dom_2);
+    cout << " = ";
+    show(n / NOD(n, d), d / NOD(n, d));
+    cout << endl;
+}
+
+void division(int num_1, int dom_1, int num_2, int dom_2) //Функция, для деления одной дроби с другой
+{
+    int n = num_1 * dom_2;
+    int d = dom_1 * num_2;
+    show(num_1, dom_1);
+    cout << " : ";
+    show(num_2, dom_2);
+    cout << " = ";
+    show(n / NOD(n, d), d / NOD(n, d));
+    cout << endl;
+}
+
+void show(numerator, denominator) //функция для вывода дроби
+{
+    if (denominator == 1)
+        cout << numerator;
+    else
+        cout << numerator << "/" << denominator;
 }
 
 bool analyze_function() {
@@ -176,41 +167,40 @@ void calculator() {
     cout << "Введите знаменатель второго числа:\n";
     cin >> dom_2;
 
-    Fraction a(num_1, dom_1);
-    Fraction b(num_2, dom_2);
-    Fraction c;
-
-    cout << "Какую операцию необходимо провести (- + : *)\n";
-    char func;
-    cin >> func;
-    switch (func) { //Свич-кейс для выбора действия с двумя объектами класса Fraction 
-    case '-':
-        c = a.Difference(b);
-        break;
-    case '+':
-        c = a.Sum(b);
-        break;
-    case '*':
-        c = a.Product(b);
-        break;
-    case ':':
-        c =
-            a.Division(b);
-        break;
-    default:
-        cout << "ошибка: неверно введена операция\n";
-        break;
+    bool flag = true;
+    while (flag == true) {
+        cout << "Какую операцию необходимо провести (- + : *), для выхода из функции введите '0' \n";
+        char func;
+        cin >> func;
+        switch (func) { //Свич-кейс для выбора действия с двумя объектами класса Fraction 
+        case '-':
+            difference(num_1, dom_1, num_2, dom_2);
+            break;
+        case '+':
+            sum(num_1, dom_1, num_2, dom_2);
+            break;
+        case '*':
+            product(num_1, dom_1, num_2, dom_2);
+            break;
+        case ':':
+            division(num_1, dom_1, num_2, dom_2);
+                break;
+        case '0':
+            flag = false;
+            break;
+        default:
+            cout << "ошибка: неверно введена операция\n";
+            break;
+        }
     }
-
-    cout << num_1 << '/' << dom_1 << ' ' << func << ' ' << num_2 << '/' << dom_2 << " = ";
-    c.show();
+    cout << "=================" << '\n';
 }
 
 int main() {
     bool flag;
     flag = true;
     while (flag == true) {
-        cout << "1 - Функция анализатора\n2 - Функция калькулятора\n3 - Стоп" << '\n';
+        cout << "1 - Функция анализатора\n2 - Функция калькулятора\n3 - Остановка функции" << '\n';
         int which_function;
         cin >> which_function;
         if (which_function == 1) analyze_function();
